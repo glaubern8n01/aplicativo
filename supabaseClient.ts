@@ -143,3 +143,17 @@ export async function updateUserProfileSettings(userId: string, updates: any) {
 
   console.log("✅ Perfil atualizado com sucesso.");
 }
+// Atualiza dados do perfil do usuário (ex: plano, créditos etc.)
+export async function updateUserProfileSettings(userId: string, updates: any) {
+  const { error } = await supabase
+    .from('usuarios_rotaspeed')
+    .update(updates)
+    .eq('id', userId);
+
+  if (error) {
+    console.error("❌ Erro ao atualizar perfil:", error.message);
+    throw error;
+  }
+
+  console.log("✅ Perfil atualizado com sucesso.");
+}
