@@ -46,13 +46,39 @@ export async function getUserByEmail(email: string) {
   return data;
 }
 
-// Adiciona nova entrega
+// Atualiza preferências do usuário
+export async function updateUserProfileSettings(id: string, updates: any) {
+  const { error } = await supabase
+    .from('usuarios_rotaspeed')
+    .update(updates)
+    .eq('id', id);
+
+  if (error) throw error;
+}
+
+// Adiciona uma entrega
 export async function addEntrega(entrega: any) {
   const { error } = await supabase.from('entregas').insert([entrega]);
   if (error) throw error;
 }
 
-// Lista entregas por ID de usuário
+// Adiciona múltiplas entregas
+export async function addMultipleEntregas(entregas: any[]) {
+  const { error } = await supabase.from('entregas').insert(entregas);
+  if (error) throw error;
+}
+
+// Atualiza otimização em múltiplas entregas
+export async function updateMultipleEntregasOptimization(ids: string[], dados: any) {
+  const { error } = await supabase
+    .from('entregas')
+    .update(dados)
+    .in('id', ids);
+
+  if (error) throw error;
+}
+
+// Lista entregas por usuário
 export async function getEntregasByUserId(userId: string) {
   const { data, error } = await supabase
     .from('entregas')
@@ -64,13 +90,13 @@ export async function getEntregasByUserId(userId: string) {
   return data;
 }
 
-// Deleta uma entrega pelo ID
+// Deleta entrega
 export async function deleteEntrega(id: string) {
   const { error } = await supabase.from('entregas').delete().eq('id', id);
   if (error) throw error;
 }
 
-// Atualiza o status de entrega
+// Atualiza status
 export async function updateEntregaStatus(id: string, status: string) {
   const { error } = await supabase
     .from('entregas')
@@ -80,16 +106,13 @@ export async function updateEntregaStatus(id: string, status: string) {
   if (error) throw error;
 }
 
-// Reset diário de entregas se necessário
+// Reset diário de entregas
 export async function resetEntregasDiariasSeNecessario(userId: string) {
   const { error } = await supabase.rpc('reset_entregas_diarias', { uid: userId });
-  if (error) {
-    console.error("❌ Erro ao resetar entregas diárias:", error.message);
-    throw error;
-  }
+  if (error) throw error;
 }
 
-// Criação da primeira entrega gratuita no cadastro
+// Primeira entrega gratuita
 export async function criarEntregaInicialGratuita(userId: string) {
   const entregaGratuita = {
     user_id: userId,
@@ -101,20 +124,14 @@ export async function criarEntregaInicialGratuita(userId: string) {
   const { error } = await supabase.from('entregas').insert([entregaGratuita]);
   if (error) throw error;
 }
-// Adiciona múltiplas entregas (em lote)
-export async function addMultipleEntregas(entregas: any[]) {
-  const { error } = await supabase.from('entregas').insert(entregas);
-  if (error) throw error;
-}
-// Atualiza várias entregas com dados de otimização (como rota, ordem, etc.)
-export async function updateMultipleEntregasOptimization(entregas: { id: string; otimizacao: string }[]) {
-  const updates = entregas.map(({ id, otimizacao }) =>
-    supabase.from('entregas').update({ otimizacao }).eq('id', id)
-  );
 
-  const results = await Promise.all(updates);
-  for (const { error } of results) {
-    if (error) throw error;
+// Converte status do banco para status visual
+export function mapDBStatusToPackageStatus(status: string) {
+  switch (status) {
+    case 'pendente': return 'Pendente';
+    case 'confirmado': return 'Confirmado';
+    case 'em_rota': return 'Em rota';
+    case 'entregue': return 'Entregue';
+    default: return 'Desconhecido';
   }
 }
-
