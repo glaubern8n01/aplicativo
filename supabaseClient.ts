@@ -30,7 +30,7 @@ export async function getUserProfile(id: string) {
   return data;
 }
 
-// Busca de perfil por email (nova)
+// Busca de perfil por email
 export async function getUserByEmail(email: string) {
   const { data, error } = await supabase
     .from('usuarios_rotaspeed')
