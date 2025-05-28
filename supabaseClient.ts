@@ -122,3 +122,30 @@ export async function addMultipleEntregas(entregas: EntregaData[]) {
     throw error;
   }
 }
+// Atualizar múltiplas entregas com otimização de rota
+export async function updateMultipleEntregasOptimization(entregas: EntregaData[]) {
+  const updates = entregas.map((entrega) => ({
+    id: entrega.id,
+    endereco: entrega.endereco,
+    bairro: entrega.bairro,
+    cep: entrega.cep,
+    status: entrega.status,
+  }));
+
+  for (const entrega of updates) {
+    const { error } = await supabase
+      .from('entregas')
+      .update({
+        endereco: entrega.endereco,
+        bairro: entrega.bairro,
+        cep: entrega.cep,
+        status: entrega.status,
+      })
+      .eq('id', entrega.id);
+
+    if (error) {
+      console.error(`Erro ao atualizar entrega ${entrega.id}:`, error.message);
+      throw error;
+    }
+  }
+}
