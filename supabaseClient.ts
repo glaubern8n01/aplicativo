@@ -42,3 +42,20 @@ export async function createUserProfile(userId: string, email: string) {
     console.log("✅ Perfil do usuário criado com sucesso.");
   }
 }
+// Criação de perfil no Supabase
+export async function createUserProfile(user: User) {
+  const { error } = await supabase.from('usuarios_rotaspeed').insert([user]);
+  if (error) throw error;
+}
+
+// Busca do perfil do usuário logado
+export async function getUserProfile(id: string) {
+  const { data, error } = await supabase
+    .from('usuarios_rotaspeed')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) throw error;
+  return data;
+}
