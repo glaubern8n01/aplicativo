@@ -1,95 +1,67 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = "https://zhjzqrddmigczdfxvfhp.supabase.co";
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL!,
+  import.meta.env.VITE_SUPABASE_ANON_KEY!
+);
 
-// Criação de perfil no Supabase
-export async function createUserProfile(user: any) {
-  const { error } = await supabase.from('usuarios_rotaspeed').insert([user]);
-  if (error) {
-    console.error("❌ Erro ao criar perfil do usuário:", error.message);
-    throw error;
-  }
-  console.log("✅ Perfil do usuário criado com sucesso.");
-}
+// Tipo para as entregas
+export type EntregaData = {
+  id?: string;
+  user_id: string;
+  endereco: string;
+  bairro: string;
+  cep: string;
+  status?: string;
+  created_at?: string;
+};
 
-// Busca de perfil pelo ID (UID do Supabase Auth)
-export async function getUserProfile(id: string) {
+// Buscar perfil do usuário
+export async function getUserProfile(userId: string) {
   const { data, error } = await supabase
     .from('usuarios_rotaspeed')
     .select('*')
-    .eq('id', id)
+    .eq('id', userId)
     .single();
 
   if (error) {
-    console.error("❌ Erro ao buscar perfil do usuário:", error.message);
-    throw error;
+    console.error('Erro ao obter perfil do usuário:', error.message);
+    return null;
   }
 
   return data;
 }
 
-// Atualização de perfil (a função que o Vercel tá pedindo!)
-export async function updateUserProfileSettings(userId: string, updates: any) {
-  const { error } = await supabase
-    .from('usuarios_rotaspeed')
-    .update(updates)
-    .eq('id', userId);
+// Criar perfil de usuário
+export async function createUserProfile(userId: string, email: string) {
+  const { error } = await supabase.from('usuarios_rotaspeed').insert([
+    {
+      id: userId,
+      email: email,
+      entregas_realizadas: 0,
+      entregas_disponiveis: 10,
+      plano: 'Start',
+      creditos: 0
+    }
+  ]);
 
   if (error) {
-    console.error("❌ Erro ao atualizar perfil:", error.message);
+    console.error('Erro ao criar perfil do usuário:', error.message);
     throw error;
   }
 }
 
-// Busca por email
-export async function getUserByEmail(email: string) {
-  const { data, error } = await supabase
-    .from('usuarios_rotaspeed')
-    .select('*')
-    .eq('email', email)
-    .single();
-
-  if (error) {
-    console.error("❌ Erro ao buscar usuário por email:", error.message);
-    throw error;
-  }
-
-  return data;
-}
-
-// Entregas
-export async function addEntrega(entrega: any) {
+// Adicionar nova entrega
+export async function addEntrega(entrega: EntregaData) {
   const { error } = await supabase.from('entregas').insert([entrega]);
-  if (error) throw error;
-}
 
-export async function addMultipleEntregas(entregas: any[]) {
-  const { error } = await supabase.from('entregas').insert(entregas);
-  if (error) throw error;
-}
-
-export async function updateMultipleEntregasOptimization(entregas: { id: string; rota_ordenada: string }[]) {
-  const updates = entregas.map(({ id, rota_ordenada }) =>
-    supabase.from('entregas').update({ rota_ordenada }).eq('id', id)
-  );
-
-  const results = await Promise.all(updates);
-  for (const r of results) {
-    if (r.error) throw r.error;
+  if (error) {
+    console.error('Erro ao adicionar entrega:', error.message);
+    throw error;
   }
 }
 
-export function mapDBStatusToPackageStatus(status: string): string {
-  const map: { [key: string]: string } = {
-    'confirmado': 'Confirmado',
-    'em_rota': 'Em Rota',
-    'entregue': 'Entregue'
-  };
-  return map[status] || status;
-}
-
+// Buscar entregas do usuário
 export async function getEntregasByUserId(userId: string) {
   const { data, error } = await supabase
     .from('entregas')
@@ -97,40 +69,46 @@ export async function getEntregasByUserId(userId: string) {
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    console.error('Erro ao buscar entregas:', error.message);
+    throw error;
+  }
+
   return data;
 }
 
-export async function deleteEntrega(id: string) {
-  const { error } = await supabase.from('entregas').delete().eq('id', id);
-  if (error) throw error;
-}
+// Excluir entrega
+export async function deleteEntrega(entregaId: string) {
+  const { error } = await supabase.from('entregas').delete().eq('id', entregaId);
 
-export async function updateEntregaStatus(id: string, status: string) {
-  const { error } = await supabase
-    .from('entregas')
-    .update({ status })
-    .eq('id', id);
-
-  if (error) throw error;
-}
-
-export async function resetEntregasDiariasSeNecessario(userId: string) {
-  const { error } = await supabase.rpc('reset_entregas_diarias', { uid: userId });
   if (error) {
-    console.error("❌ Erro ao resetar entregas diárias:", error.message);
+    console.error('Erro ao excluir entrega:', error.message);
     throw error;
   }
 }
 
-export async function criarEntregaInicialGratuita(userId: string) {
-  const entregaGratuita = {
-    user_id: userId,
-    endereco: 'Primeira entrega gratuita',
-    status: 'confirmado',
-    gratuito: true
-  };
+// Atualizar status da entrega
+export async function updateEntregaStatus(entregaId: string, status: string) {
+  const { error } = await supabase
+    .from('entregas')
+    .update({ status })
+    .eq('id', entregaId);
 
-  const { error } = await supabase.from('entregas').insert([entregaGratuita]);
-  if (error) throw error;
+  if (error) {
+    console.error('Erro ao atualizar status da entrega:', error.message);
+    throw error;
+  }
+}
+
+// ⚠️ Função que estava faltando!
+export async function updateUserProfileSettings(userId: string, updates: any) {
+  const { error } = await supabase
+    .from('usuarios_rotaspeed')
+    .update(updates)
+    .eq('id', userId);
+
+  if (error) {
+    console.error("Erro ao atualizar configurações do perfil:", error.message);
+    throw error;
+  }
 }
