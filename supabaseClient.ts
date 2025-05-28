@@ -106,4 +106,15 @@ export async function addMultipleEntregas(entregas: any[]) {
   const { error } = await supabase.from('entregas').insert(entregas);
   if (error) throw error;
 }
+// Atualiza várias entregas com dados de otimização (como rota, ordem, etc.)
+export async function updateMultipleEntregasOptimization(entregas: { id: string; otimizacao: string }[]) {
+  const updates = entregas.map(({ id, otimizacao }) =>
+    supabase.from('entregas').update({ otimizacao }).eq('id', id)
+  );
+
+  const results = await Promise.all(updates);
+  for (const { error } of results) {
+    if (error) throw error;
+  }
+}
 
