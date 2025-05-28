@@ -61,3 +61,4 @@ Esse app está publicado na Vercel:
 Criado por Glauber Correia  
 🌐 glaubermarketing.com  
 📲 @glauber.correia
+.
