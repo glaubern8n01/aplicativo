@@ -14,7 +14,7 @@ export async function createUserProfile(user: any) {
   console.log("✅ Perfil do usuário criado com sucesso.");
 }
 
-// Busca de perfil pelo ID
+// Busca de perfil pelo ID (UID do Supabase Auth)
 export async function getUserProfile(id: string) {
   const { data, error } = await supabase
     .from('usuarios_rotaspeed')
@@ -30,7 +30,7 @@ export async function getUserProfile(id: string) {
   return data;
 }
 
-// Busca de perfil por email
+// Busca de perfil por email (se necessário)
 export async function getUserByEmail(email: string) {
   const { data, error } = await supabase
     .from('usuarios_rotaspeed')
@@ -46,17 +46,7 @@ export async function getUserByEmail(email: string) {
   return data;
 }
 
-// Atualiza preferências do usuário
-export async function updateUserProfileSettings(id: string, updates: any) {
-  const { error } = await supabase
-    .from('usuarios_rotaspeed')
-    .update(updates)
-    .eq('id', id);
-
-  if (error) throw error;
-}
-
-// Adiciona uma entrega
+// Adiciona nova entrega
 export async function addEntrega(entrega: any) {
   const { error } = await supabase.from('entregas').insert([entrega]);
   if (error) throw error;
@@ -68,17 +58,29 @@ export async function addMultipleEntregas(entregas: any[]) {
   if (error) throw error;
 }
 
-// Atualiza otimização em múltiplas entregas
-export async function updateMultipleEntregasOptimization(ids: string[], dados: any) {
-  const { error } = await supabase
-    .from('entregas')
-    .update(dados)
-    .in('id', ids);
+// Atualiza rota de múltiplas entregas
+export async function updateMultipleEntregasOptimization(entregas: { id: string; rota_ordenada: string }[]) {
+  const updates = entregas.map(({ id, rota_ordenada }) =>
+    supabase.from('entregas').update({ rota_ordenada }).eq('id', id)
+  );
 
-  if (error) throw error;
+  const results = await Promise.all(updates);
+  for (const r of results) {
+    if (r.error) throw r.error;
+  }
 }
 
-// Lista entregas por usuário
+// Mapeia status do banco para status visível no app
+export function mapDBStatusToPackageStatus(status: string): string {
+  const map: { [key: string]: string } = {
+    'confirmado': 'Confirmado',
+    'em_rota': 'Em Rota',
+    'entregue': 'Entregue'
+  };
+  return map[status] || status;
+}
+
+// Lista entregas por ID de usuário
 export async function getEntregasByUserId(userId: string) {
   const { data, error } = await supabase
     .from('entregas')
@@ -90,13 +92,13 @@ export async function getEntregasByUserId(userId: string) {
   return data;
 }
 
-// Deleta entrega
+// Deleta uma entrega pelo ID
 export async function deleteEntrega(id: string) {
   const { error } = await supabase.from('entregas').delete().eq('id', id);
   if (error) throw error;
 }
 
-// Atualiza status
+// Atualiza o status de entrega
 export async function updateEntregaStatus(id: string, status: string) {
   const { error } = await supabase
     .from('entregas')
@@ -106,13 +108,16 @@ export async function updateEntregaStatus(id: string, status: string) {
   if (error) throw error;
 }
 
-// Reset diário de entregas
+// Reset diário de entregas se necessário
 export async function resetEntregasDiariasSeNecessario(userId: string) {
   const { error } = await supabase.rpc('reset_entregas_diarias', { uid: userId });
-  if (error) throw error;
+  if (error) {
+    console.error("❌ Erro ao resetar entregas diárias:", error.message);
+    throw error;
+  }
 }
 
-// Primeira entrega gratuita
+// Criação da primeira entrega gratuita no cadastro
 export async function criarEntregaInicialGratuita(userId: string) {
   const entregaGratuita = {
     user_id: userId,
@@ -123,15 +128,4 @@ export async function criarEntregaInicialGratuita(userId: string) {
 
   const { error } = await supabase.from('entregas').insert([entregaGratuita]);
   if (error) throw error;
-}
-
-// Converte status do banco para status visual
-export function mapDBStatusToPackageStatus(status: string) {
-  switch (status) {
-    case 'pendente': return 'Pendente';
-    case 'confirmado': return 'Confirmado';
-    case 'em_rota': return 'Em rota';
-    case 'entregue': return 'Entregue';
-    default: return 'Desconhecido';
-  }
 }
