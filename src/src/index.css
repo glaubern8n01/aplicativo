@@ -1,3 +1,5 @@
+import './src/index.css'; // ou './index.css' se o build estiver configurado diferente
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
