@@ -1,11 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 
+// Supabase config
 export const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL!,
   import.meta.env.VITE_SUPABASE_ANON_KEY!
 );
 
-// Tipo para as entregas
+// Tipo para entregas
 export type EntregaData = {
   id?: string;
   user_id: string;
@@ -32,7 +33,7 @@ export async function getUserProfile(userId: string) {
   return data;
 }
 
-// Criar perfil de usuário
+// Criar perfil do usuário
 export async function createUserProfile(userId: string, email: string) {
   const { error } = await supabase.from('usuarios_rotaspeed').insert([
     {
@@ -41,12 +42,25 @@ export async function createUserProfile(userId: string, email: string) {
       entregas_realizadas: 0,
       entregas_disponiveis: 10,
       plano: 'Start',
-      creditos: 0
-    }
+      creditos: 0,
+    },
   ]);
 
   if (error) {
     console.error('Erro ao criar perfil do usuário:', error.message);
+    throw error;
+  }
+}
+
+// Atualizar configurações do perfil
+export async function updateUserProfileSettings(userId: string, updates: any) {
+  const { error } = await supabase
+    .from('usuarios_rotaspeed')
+    .update(updates)
+    .eq('id', userId);
+
+  if (error) {
+    console.error('Erro ao atualizar configurações do perfil:', error.message);
     throw error;
   }
 }
@@ -96,19 +110,6 @@ export async function updateEntregaStatus(entregaId: string, status: string) {
 
   if (error) {
     console.error('Erro ao atualizar status da entrega:', error.message);
-    throw error;
-  }
-}
-
-// ⚠️ Função que estava faltando!
-export async function updateUserProfileSettings(userId: string, updates: any) {
-  const { error } = await supabase
-    .from('usuarios_rotaspeed')
-    .update(updates)
-    .eq('id', userId);
-
-  if (error) {
-    console.error("Erro ao atualizar configurações do perfil:", error.message);
     throw error;
   }
 }
