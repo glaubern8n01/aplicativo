@@ -1,64 +1,86 @@
+# RotaSpeed – App de Entregas com IA e Rotas Otimizadas
 
-# RotaSpeed — App de Entregas com IA e Rotas Otimizadas
-
-O RotaSpeed é um painel leve para entregadores cadastrarem pacotes por voz, imagem, texto, PDF ou planilhas, com extração automática de endereço via IA (Gemini) e roteirização otimizada com Google Maps.
+O **RotaSpeed** é um painel web leve onde entregadores podem cadastrar pacotes por **voz, imagem, texto, PDF ou planilhas**. A IA reconhece automaticamente os endereços e organiza **rotas otimizadas** via Google Maps.
 
 ---
 
-## ✅ FUNCIONALIDADES
+## ✨ Funcionalidades
 
 - Login com e-mail e senha via Supabase
-- 10 entregas grátis no primeiro cadastro
-- Upload de pacotes por:
-  - Foto (OCR)
-  - Áudio (ditado nativo)
-  - Texto digitado
-  - PDF e planilhas
-- IA do Gemini para extrair endereço de cada entrada
-- Geração de rota otimizada com links do Google Maps
-- Controle diário de entregas com limite por plano
-- Botão "Próxima Entrega" para confirmar e seguir
+- Primeiras 10 entregas gratuitas no cadastro
+- Cadastro de pacotes via:
+  - 📷 Foto com OCR automático
+  - 🎤 Áudio com ditado nativo
+  - ⌨️ Texto digitado
+  - 📄 PDF ou Excel (planilha)
+- IA Gemini para extração automática de endereço
+- Roteirização com link do Google Maps
+- Controle diário de entregas conforme o plano
+- Botão “Próxima entrega” para seguir automaticamente
+- Envio de status por WhatsApp (em planos com API)
 
 ---
 
-## 🛠 COMO INSTALAR LOCALMENTE
+## 🔐 Segurança e Configuração
 
-```bash
-git clone https://github.com/glaubern8n01/aplicativo.git
-cd aplicativo
-npm install
-npm run dev
-```
+Este app utiliza o Supabase como backend.
 
----
+Para funcionar corretamente em produção (Vercel), configure duas variáveis no painel da Vercel:
+VITE_SUPABASE_URL=https://[SUA-URL].supabase.co
+VITE_SUPABASE_ANON_KEY=[SUA-CHAVE-ANON]
 
-### 4. Configure as variáveis de ambiente
 
-Para o app funcionar corretamente, ele precisa saber onde está seu banco de dados Supabase.
-
-➡️ Crie um arquivo chamado `.env.local` dentro da pasta do projeto (onde está o `package.json`)
-
-Depois, cole dentro do arquivo:
-
-```
-VITE_SUPABASE_URL=https://zhjzqrddmigczdfxvfhp.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoanpxcmRkbWlnY3pkZnh2ZmhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyNjM3MDMsImV4cCI6MjA2MjgzOTcwM30.U5l5VEIg4WI7aDS6QbsQRqMAWx6HGgkmDEOObWOnYc8
-```
-
-Essa é sua chave `anon public` que permite conexão segura do frontend com o Supabase.
+> ❗ Essas chaves **não devem ser colocadas diretamente no código** ou no README público.  
+> Elas devem ser adicionadas com segurança no painel da Vercel, em **Project Settings > Environment Variables**.
 
 ---
 
-## 🌐 PUBLICAÇÃO
+## 🚀 Publicação
 
-Esse app está publicado na Vercel:  
+Este app está publicado em:
+
 🔗 https://aplicativo-iota.vercel.app
 
+Cada commit no GitHub gera um novo deploy automático pela Vercel.
+
 ---
 
-## 📞 SUPORTE
+## 📞 Suporte
 
-Criado por Glauber Correia  
-🌐 glaubermarketing.com  
-📲 @glauber.correia
-.
+Caso precise de ajuda, melhorias ou integração profissional, entre em contato com o criador original do projeto.
+
+---
+
+## ⚠️ Termos de Uso
+
+Este app é privado e foi desenvolvido para uso com login exclusivo.  
+A redistribuição, clonagem ou cópia comercial não autorizada é proibida.
+
+> ❗ Essas chaves **não devem ser colocadas diretamente no código** ou no README público.  
+> Elas devem ser adicionadas com segurança no painel da Vercel, em **Project Settings > Environment Variables**.
+
+---
+
+## 🚀 Publicação
+
+Este app está publicado em:
+
+🔗 https://aplicativo-iota.vercel.app
+
+Cada commit no GitHub gera um novo deploy automático pela Vercel.
+
+---
+
+## 📞 Suporte
+
+Caso precise de ajuda, melhorias ou integração profissional, entre em contato com o criador original do projeto.
+
+---
+
+## ⚠️ Termos de Uso
+
+Este app é privado e foi desenvolvido para uso com login exclusivo.  
+A redistribuição, clonagem ou cópia comercial não autorizada é proibida.
+
+
+
