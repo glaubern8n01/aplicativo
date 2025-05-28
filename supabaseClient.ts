@@ -113,3 +113,13 @@ export async function updateEntregaStatus(entregaId: string, status: string) {
     throw error;
   }
 }
+// Adicionar várias entregas de uma vez
+export async function addMultipleEntregas(entregas: EntregaData[]) {
+  const { error } = await supabase.from('entregas').insert(entregas);
+
+  if (error) {
+    console.error('Erro ao adicionar múltiplas entregas:', error.message);
+    throw error;
+  }
+}
+
