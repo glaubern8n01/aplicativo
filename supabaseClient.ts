@@ -101,3 +101,9 @@ export async function criarEntregaInicialGratuita(userId: string) {
   const { error } = await supabase.from('entregas').insert([entregaGratuita]);
   if (error) throw error;
 }
+// Adiciona múltiplas entregas (em lote)
+export async function addMultipleEntregas(entregas: any[]) {
+  const { error } = await supabase.from('entregas').insert(entregas);
+  if (error) throw error;
+}
+
