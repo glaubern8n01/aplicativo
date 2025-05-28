@@ -14,7 +14,22 @@ export async function createUserProfile(user: any) {
   console.log("✅ Perfil do usuário criado com sucesso.");
 }
 
-// Busca de perfil pelo ID (UID do Supabase Auth)
+// Atualiza dados do perfil do usuário
+export async function updateUserProfileSettings(userId: string, updates: any) {
+  const { error } = await supabase
+    .from('usuarios_rotaspeed')
+    .update(updates)
+    .eq('id', userId);
+
+  if (error) {
+    console.error("❌ Erro ao atualizar perfil:", error.message);
+    throw error;
+  }
+
+  console.log("✅ Perfil atualizado com sucesso.");
+}
+
+// Busca de perfil pelo ID
 export async function getUserProfile(id: string) {
   const { data, error } = await supabase
     .from('usuarios_rotaspeed')
@@ -30,7 +45,7 @@ export async function getUserProfile(id: string) {
   return data;
 }
 
-// Busca de perfil por email (se necessário)
+// Busca de perfil por email
 export async function getUserByEmail(email: string) {
   const { data, error } = await supabase
     .from('usuarios_rotaspeed')
@@ -92,13 +107,13 @@ export async function getEntregasByUserId(userId: string) {
   return data;
 }
 
-// Deleta uma entrega pelo ID
+// Deleta uma entrega
 export async function deleteEntrega(id: string) {
   const { error } = await supabase.from('entregas').delete().eq('id', id);
   if (error) throw error;
 }
 
-// Atualiza o status de entrega
+// Atualiza status da entrega
 export async function updateEntregaStatus(id: string, status: string) {
   const { error } = await supabase
     .from('entregas')
@@ -108,7 +123,7 @@ export async function updateEntregaStatus(id: string, status: string) {
   if (error) throw error;
 }
 
-// Reset diário de entregas se necessário
+// Reset diário
 export async function resetEntregasDiariasSeNecessario(userId: string) {
   const { error } = await supabase.rpc('reset_entregas_diarias', { uid: userId });
   if (error) {
@@ -117,7 +132,7 @@ export async function resetEntregasDiariasSeNecessario(userId: string) {
   }
 }
 
-// Criação da primeira entrega gratuita no cadastro
+// Primeira entrega gratuita
 export async function criarEntregaInicialGratuita(userId: string) {
   const entregaGratuita = {
     user_id: userId,
@@ -128,32 +143,4 @@ export async function criarEntregaInicialGratuita(userId: string) {
 
   const { error } = await supabase.from('entregas').insert([entregaGratuita]);
   if (error) throw error;
-}
-// Atualiza configurações do perfil (ex: nome, plano, créditos etc.)
-export async function updateUserProfileSettings(userId: string, updates: any) {
-  const { error } = await supabase
-    .from('usuarios_rotaspeed')
-    .update(updates)
-    .eq('id', userId);
-
-  if (error) {
-    console.error("❌ Erro ao atualizar perfil:", error.message);
-    throw error;
-  }
-
-  console.log("✅ Perfil atualizado com sucesso.");
-}
-// Atualiza dados do perfil do usuário (ex: plano, créditos etc.)
-export async function updateUserProfileSettings(userId: string, updates: any) {
-  const { error } = await supabase
-    .from('usuarios_rotaspeed')
-    .update(updates)
-    .eq('id', userId);
-
-  if (error) {
-    console.error("❌ Erro ao atualizar perfil:", error.message);
-    throw error;
-  }
-
-  console.log("✅ Perfil atualizado com sucesso.");
 }
