@@ -122,4 +122,3 @@ export async function addMultipleEntregas(entregas: EntregaData[]) {
     throw error;
   }
 }
-
