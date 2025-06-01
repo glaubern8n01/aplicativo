@@ -1662,7 +1662,7 @@ const DeliveryPage: React.FC = () => {
   }, [state.optimizedRoute, state.isLoading, navigate, dispatch, currentPackage, remainingDeliveries, state.currentStopIndex, state.phase]);
 
 
-  if (state.isLoading && state.optimizedRoute.length === 0 && state.phase !== AppPhase.COMPLETED) {
+  if (state.isLoading && state.optimizedRoute.length === 0 && (state.phase as AppPhase) !== AppPhase.COMPLETED) {
       return <AppShell title="Otimizando Rota..."><div className="flex flex-col items-center justify-center h-full"><Spinner className="mx-auto mt-10" /><p className="mt-2">Aguarde...</p></div></AppShell>;
   }
 
