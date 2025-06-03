@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useReducer, createContext, useContext, useState, useCallback, useRef } from 'react';
 import { HashRouter, Routes, Route, Navigate, useNavigate, useLocation, Link } from 'react-router-dom';
 import type { AppState, AppAction, User, PackageInfo, AddressInfo, RouteStop, ParsedAddressFromAI, UserCoordinates, EntregaDbRecord } from './types';
@@ -211,6 +209,52 @@ const getAppRootUrl = (dispatch: React.Dispatch<AppAction>): string => {
 
 const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
+
+useEffect(() => {
+  const fetchSessionAndProfile = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (session?.user?.id) {
+      try {
+        const { id, email, user_metadata } = session.user;
+
+        // Sincroniza o perfil (ou cria) usando função do Supabase
+        await invokeSyncUserProfile({
+          userId: id,
+          email,
+          nome: user_metadata?.full_name ?? "Entregador",
+        });
+
+        const profile = await getUserProfile(id);
+
+        dispatch({
+          type: 'LOGIN_SUCCESS',
+          payload: profile,
+        });
+      } catch (err) {
+        console.error("Erro ao carregar sessão:", err);
+        dispatch({ type: 'LOGOUT' });
+      }
+    } else {
+      dispatch({ type: 'LOGOUT' });
+    }
+  };
+
+  fetchSessionAndProfile();
+
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((_event, session) => {
+    if (!session) {
+      dispatch({ type: 'LOGOUT' });
+    }
+  });
+
+  return () => subscription.unsubscribe();
+}, []);
+
 
   const fetchUserEntregas = async (userId: string) => {
     try {
