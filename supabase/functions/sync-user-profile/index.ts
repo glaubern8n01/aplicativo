@@ -4,22 +4,15 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.44.4";
 
-// Lista de domínios permitidos (CORS)
-const ALLOWED_ORIGINS = [
-  "https://app.rotaspeed.com.br",
-  "https://aplicativo-iota.vercel.app"
-];
+// ⚠️ Seu domínio real atual:
+const ALLOWED_ORIGIN = "https://aplicativo-iota.vercel.app";
 
-// Função para obter headers dinâmicos conforme a origem
-function getCorsHeaders(origin: string | null): Record<string, string> {
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin ?? "") ? origin : "";
-  return {
-    "Access-Control-Allow-Origin": allowedOrigin,
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Content-Type": "application/json"
-  };
-}
+const corsHeaders = {
+  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Content-Type": "application/json"
+};
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -27,14 +20,8 @@ const supabase = createClient(
 );
 
 serve(async (req) => {
-  const origin = req.headers.get("origin");
-  const corsHeaders = getCorsHeaders(origin);
-
   if (req.method === "OPTIONS") {
-    return new Response("ok", {
-      status: 200,
-      headers: corsHeaders
-    });
+    return new Response("ok", { headers: corsHeaders });
   }
 
   if (req.method !== "POST") {
@@ -63,9 +50,6 @@ serve(async (req) => {
     });
   }
 
-  console.log("✅ sync_user_profile INICIADA");
-  console.log("📦 Payload recebido:", body);
-
   const { data: existingUser, error: fetchError } = await supabase
     .from("usuarios_rotaspeed")
     .select("*")
@@ -73,8 +57,7 @@ serve(async (req) => {
     .maybeSingle();
 
   if (fetchError) {
-    console.error("❌ Erro ao buscar usuário:", fetchError.message);
-    return new Response(JSON.stringify({ error: "Erro ao buscar usuário" }), {
+    return new Response(JSON.stringify({ error: "Erro ao buscar usuário", detail: fetchError.message }), {
       status: 500,
       headers: corsHeaders
     });
@@ -97,8 +80,7 @@ serve(async (req) => {
     ]);
 
     if (insertError) {
-      console.error("❌ Erro ao criar usuário:", insertError.message);
-      return new Response(JSON.stringify({ error: "Erro ao criar usuário" }), {
+      return new Response(JSON.stringify({ error: "Erro ao criar usuário", detail: insertError.message }), {
         status: 500,
         headers: corsHeaders
       });
