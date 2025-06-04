@@ -1,14 +1,18 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RotaSpeed</title>
+
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+  <!-- FontAwesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+
+  <!-- Custom scrollbar -->
   <style>
-    /* Custom scrollbar for better aesthetics */
     ::-webkit-scrollbar {
       width: 8px;
       height: 8px;
@@ -25,24 +29,31 @@
       background: #555;
     }
     body {
-      overscroll-behavior-y: contain; /* Prevents pull-to-refresh on mobile */
+      overscroll-behavior-y: contain;
     }
   </style>
-<script type="importmap">
-{
-  "imports": {
-    "react/": "https://esm.sh/react@^19.1.0/",
-    "react": "https://esm.sh/react@^19.1.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
-    "@google/genai": "https://esm.sh/@google/genai@^1.0.0",
-    "react-router-dom": "https://esm.sh/react-router-dom@^7.6.0"
+
+  <!-- Import Map (uso opcional se não estiver usando Vite ou bundler) -->
+  <script type="importmap">
+  {
+    "imports": {
+      "react/": "https://esm.sh/react@^19.1.0/",
+      "react": "https://esm.sh/react@^19.1.0",
+      "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+      "@google/genai": "https://esm.sh/@google/genai@^1.0.0",
+      "react-router-dom": "https://esm.sh/react-router-dom@^7.6.0"
+    }
   }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
+  </script>
+
+  <!-- ✅ Corrige o caminho correto do CSS (deve estar dentro de /src se importado no JS) -->
+  <link rel="stylesheet" href="/src/index.css" />
 </head>
+
 <body class="bg-gray-100">
   <div id="root"></div>
-  <script type="module" src="/index.tsx"></script>
+
+  <!-- ✅ Corrige o caminho para o entry point Vite/React -->
+  <script type="module" src="/src/index.tsx"></script>
 </body>
 </html>
